@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: camel-rest-sample
+  name: camel-rest-sample
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: camel-rest-sample
+  template:
+    metadata:
+      labels:
+        app: camel-rest-sample
+    spec:
+      containers:
+      - image: sample 
+        imagePullPolicy: Always
+        name: camel-rest-sample
+        ports:
+        - containerPort: 8080
+          protocol: TCP

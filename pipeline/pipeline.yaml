@@ -1,29 +1,27 @@
 apiVersion: tekton.dev/v1beta1
 kind: Pipeline
 metadata:
-  creationTimestamp: '2022-08-11T17:40:13Z'
-  generation: 13
+  creationTimestamp: '2022-08-18T17:09:05Z'
+  generation: 16
   managedFields:
     - apiVersion: tekton.dev/v1beta1
       fieldsType: FieldsV1
       fieldsV1:
         'f:spec':
           .: {}
-          'f:description': {}
           'f:params': {}
           'f:resources': {}
           'f:tasks': {}
           'f:workspaces': {}
       manager: Mozilla
       operation: Update
-      time: '2022-08-11T17:40:13Z'
-  name: fuse-sample
+      time: '2022-08-18T17:10:47Z'
+  name: fuse-app
   namespace: pipelines
-  resourceVersion: '694784'
-  selfLink: /apis/tekton.dev/v1beta1/namespaces/pipelines/pipelines/fuse-sample
-  uid: f83ad03b-a320-471c-9764-274c6985a7cd
+  resourceVersion: '3422620'
+  selfLink: /apis/tekton.dev/v1beta1/namespaces/pipelines/pipelines/fuse-app
+  uid: f5885a8f-806f-4efe-887b-11b48d932eaa
 spec:
-  description: The Pipeline to build and deploy the  Fuse App.
   params:
     - default: camel-rest-sample
       name: APP_NAME
@@ -45,12 +43,23 @@ spec:
           value: $(params.GIT_REPO)
         - name: revision
           value: $(params.GIT_REVISION)
-        - name: deleteExisting
+        - name: submodules
+          value: 'true'
+        - name: depth
+          value: '1'
+        - name: sslVerify
           value: 'true'
         - name: subdirectory
           value: $(params.APP_NAME)
+        - name: deleteExisting
+          value: 'true'
+        - name: verbose
+          value: 'true'
+        - name: gitInitImage
+          value: >-
+            registry.redhat.io/openshift-pipelines/pipelines-git-init-rhel8@sha256:afc5d3f9efe26c7042635d43b8ffd09d67936e3d0b6b901dc08a33e20313d361
       taskRef:
-        kind: ClusterTask
+        kind: Task
         name: git-clone
       workspaces:
         - name: output
@@ -87,7 +96,7 @@ spec:
       runAfter:
         - maven-build
       taskRef:
-        kind: ClusterTask
+        kind: Task
         name: buildah
       workspaces:
         - name: source
@@ -98,9 +107,9 @@ spec:
           value: $(params.IMAGE_NAME)
         - name: destImageURL
           value: >-
-            example-registry-quay-quay-registry.apps.cluster-n2gmg.n2gmg.sandbox1085.opentlc.com/admin/camel-rest-sample
+            example-registry-quay-quay-registry.apps.cluster-n2gmg.n2gmg.sandbox1085.opentlc.com/admin/$(params.APP_NAME)
         - name: srcTLSverify
-          value: 'false'
+          value: 'true'
         - name: destTLSverify
           value: 'false'
         - name: quay-secret
@@ -113,7 +122,21 @@ spec:
         kind: Task
         name: my-skopeo-copy
       workspaces:
-        - name: output
+        - name: source
+          workspace: local-maven-repo
+    - name: scan-image
+      params:
+        - name: imageName
+          value: demo
+        - name: quay-secret
+          value: quay-pull-secret
+      runAfter:
+        - my-skopeo-copy
+      taskRef:
+        kind: Task
+        name: scan-image
+      workspaces:
+        - name: source
           workspace: local-maven-repo
   workspaces:
     - name: local-maven-repo
