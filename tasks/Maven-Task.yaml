@@ -1,0 +1,23 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: maven-build
+  namespace: pipelines
+
+spec:
+  params:
+    - name: subdirectory
+      type: string
+  steps:
+    - args:
+        - install
+        - '-Dmaven.repo.local=$(workspaces.output.path)'
+      command:
+        - /usr/bin/mvn
+      image: 'maven:3.6.0-jdk-11-slim'
+      name: mvn-goals
+      resources: {}
+      workingDir: /workspace/output/$(inputs.params.subdirectory)
+  workspaces:
+    - description: The workspace consisting of maven project.
+      name: output

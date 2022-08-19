@@ -1,0 +1,1 @@
+oc policy add-role-to-user edit system:serviceaccount:pipelines:pipeline -n app-sit

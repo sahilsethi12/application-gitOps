@@ -1,0 +1,76 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  creationTimestamp: '2022-08-18T18:29:41Z'
+  generation: 27
+  managedFields:
+    - apiVersion: tekton.dev/v1beta1
+      fieldsType: FieldsV1
+      fieldsV1:
+        'f:spec':
+          .: {}
+          'f:params': {}
+          'f:steps': {}
+          'f:volumes': {}
+          'f:workspaces': {}
+      manager: Mozilla
+      operation: Update
+      time: '2022-08-19T17:09:48Z'
+  name: scan-image
+  namespace: pipelines
+  resourceVersion: '3400947'
+  selfLink: /apis/tekton.dev/v1beta1/namespaces/pipelines/tasks/scan-image
+  uid: 92dfba3c-c3b0-41ff-8054-402d7e6fc972
+spec:
+  params:
+    - name: imageName
+      type: string
+    - default: quay-pull-secret
+      description: secrets name to push image to quay
+      name: quay-secret
+      type: string
+    - default: .
+      description: Path to the directory to use as context.
+      name: CONTEXT
+      type: string
+  steps:
+    - image: >-
+        image-registry.openshift-image-registry.svc:5000/openshift/podmanclair:v3
+      name: scan-image
+      resources: {}
+      script: >
+        export VULNERABILITY_OUTPUT_FILE=/tmp/report.txt
+
+        curl -k -H "Authorization: Bearer 
+        uNXZkbLW9ZwoLMl00x9cJvIKtKv6gJcPFrOkpobg" 
+        https://example-registry-quay-quay-registry.apps.cluster-n2gmg.n2gmg.sandbox1085.opentlc.com/api/v1/repository/admin/camel-rest-sample/manifest/sha256:a57fc8d5bb61fa87f8e3dc1814e26ff7dff736105f04c8cc82c80d0b18861a8d/security\?vulnerabilities\=true
+        |jq -r '.data.Layer.Features[].Vulnerabilities[] | .Name + " " +
+        .NamespaceName + " " + .Severity' > ${VULNERABILITY_OUTPUT_FILE}
+
+        cat ${VULNERABILITY_OUTPUT_FILE}
+
+        CRITICAL=$(cat ${VULNERABILITY_OUTPUT_FILE} | grep Critical | wc -l)
+
+        if [ $CRITICAL -gt 4 ]; then
+         echo ""
+         echo -e "==> There are $CRITICAL Critical Vulnerabilities found in this Layer, Exiting from Pipeline..."
+         exit 1
+        else
+         echo ""
+         echo -e "==> $CRITICAL Critical Vulnerabilities found in this Layer"
+         echo ""
+        fi  
+        done
+
+
+        cat report.txt
+      volumeMounts:
+        - mountPath: /etc/secret-volume
+          name: quay-auth-secret
+      workingDir: $(workspaces.source.path)
+  volumes:
+    - name: quay-auth-secret
+      secret:
+        secretName: $(params.quay-secret)
+  workspaces:
+    - name: source
