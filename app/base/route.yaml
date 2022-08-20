@@ -1,0 +1,13 @@
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  labels:
+    app: camel-rest-sample
+  name: camel-rest-sample
+spec:
+  port:
+    targetPort: 8080-tcp
+  to:
+    kind: Service
+    name: camel-rest-sample
+    weight: 100

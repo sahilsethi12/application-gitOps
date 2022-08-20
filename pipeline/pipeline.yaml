@@ -1,26 +1,8 @@
 apiVersion: tekton.dev/v1beta1
 kind: Pipeline
 metadata:
-  creationTimestamp: '2022-08-18T17:09:05Z'
-  generation: 16
-  managedFields:
-    - apiVersion: tekton.dev/v1beta1
-      fieldsType: FieldsV1
-      fieldsV1:
-        'f:spec':
-          .: {}
-          'f:params': {}
-          'f:resources': {}
-          'f:tasks': {}
-          'f:workspaces': {}
-      manager: Mozilla
-      operation: Update
-      time: '2022-08-18T17:10:47Z'
   name: fuse-app
   namespace: pipelines
-  resourceVersion: '3422620'
-  selfLink: /apis/tekton.dev/v1beta1/namespaces/pipelines/pipelines/fuse-app
-  uid: f5885a8f-806f-4efe-887b-11b48d932eaa
 spec:
   params:
     - default: camel-rest-sample
