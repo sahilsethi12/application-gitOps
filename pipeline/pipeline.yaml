@@ -1,8 +1,26 @@
 apiVersion: tekton.dev/v1beta1
 kind: Pipeline
 metadata:
+  creationTimestamp: '2022-08-20T09:43:19Z'
+  generation: 11
+  managedFields:
+    - apiVersion: tekton.dev/v1beta1
+      fieldsType: FieldsV1
+      fieldsV1:
+        'f:spec':
+          .: {}
+          'f:params': {}
+          'f:resources': {}
+          'f:tasks': {}
+          'f:workspaces': {}
+      manager: Mozilla
+      operation: Update
+      time: '2022-08-20T09:55:17Z'
   name: fuse-app
   namespace: pipelines
+  resourceVersion: '3959165'
+  selfLink: /apis/tekton.dev/v1beta1/namespaces/pipelines/pipelines/fuse-app
+  uid: 6b332b12-f38a-47f1-bc31-16172786c8eb
 spec:
   params:
     - default: camel-rest-sample
@@ -119,6 +137,45 @@ spec:
         name: scan-image
       workspaces:
         - name: source
+          workspace: local-maven-repo
+    - name: git-update-deployment
+      params:
+        - name: url
+          value: 'https://github.com/sahilsethi12/application-gitOps.git'
+        - name: revision
+          value: master
+        - name: submodules
+          value: 'true'
+        - name: CONTEXT
+          value: $(params.APP_NAME)
+        - name: KUSTOMIZATION_PATH
+          value: app/base
+        - name: depth
+          value: '1'
+        - name: sslVerify
+          value: 'true'
+        - name: subdirectory
+          value: application-gitOps
+        - name: deleteExisting
+          value: 'true'
+        - name: verbose
+          value: 'true'
+        - name: gitInitImage
+          value: >-
+            registry.redhat.io/openshift-pipelines/pipelines-git-init-rhel8@sha256:afc5d3f9efe26c7042635d43b8ffd09d67936e3d0b6b901dc08a33e20313d361
+        - name: NEW_IMAGE
+          value: >-
+            example-registry-quay-quay-registry.apps.cluster-n2gmg.n2gmg.sandbox1085.opentlc.com/admin/$(params.APP_NAME)
+        - name: CURRENT_IMAGE
+          value: >-
+            example-registry-quay-quay-registry.apps.cluster-n2gmg.n2gmg.sandbox1085.opentlc.com/admin/$(params.APP_NAME)
+      runAfter:
+        - scan-image
+      taskRef:
+        kind: Task
+        name: git-update-deployment
+      workspaces:
+        - name: output
           workspace: local-maven-repo
   workspaces:
     - name: local-maven-repo
