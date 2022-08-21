@@ -7,4 +7,4 @@ kind: Kustomization
 images:
 - name: example-registry-quay-quay-registry.apps.cluster-n2gmg.n2gmg.sandbox1085.opentlc.com/admin/camel-rest-sample
   newName: example-registry-quay-quay-registry.apps.cluster-n2gmg.n2gmg.sandbox1085.opentlc.com/admin/camel-rest-sample
-  newTag: f75015a
+  newTag: bc61a8e
