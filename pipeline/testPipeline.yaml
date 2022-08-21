@@ -1,0 +1,78 @@
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  creationTimestamp: '2022-08-20T11:51:38Z'
+  generation: 1
+  managedFields:
+    - apiVersion: tekton.dev/v1beta1
+      fieldsType: FieldsV1
+      fieldsV1:
+        'f:spec':
+          .: {}
+          'f:params': {}
+          'f:resources': {}
+          'f:tasks': {}
+          'f:workspaces': {}
+      manager: Mozilla
+      operation: Update
+      time: '2022-08-20T11:51:38Z'
+  name: new-pipeline
+  namespace: pipelines
+  resourceVersion: '3980171'
+  selfLink: /apis/tekton.dev/v1beta1/namespaces/pipelines/pipelines/new-pipeline
+  uid: 83944b4c-352b-497c-a888-44acb0d10131
+spec:
+  params:
+    - default: camel-rest-sample
+      name: APP_NAME
+      type: string
+    - default: 'https://github.com/sahilsethi12/Camel-Rest-Sample.git'
+      name: GIT_REPO
+      type: string
+    - default: main
+      name: GIT_REVISION
+      type: string
+    - default: >-
+        image-registry.openshift-image-registry.svc:5000/app-sit/camel-rest-sample
+      name: IMAGE_NAME
+      type: string
+  tasks:
+    - name: git-update-deployment
+      params:
+        - name: url
+          value: 'https://github.com/sahilsethi12/application-gitOps.git'
+        - name: revision
+          value: master
+        - name: submodules
+          value: 'true'
+        - name: depth
+          value: '1'
+        - name: sslVerify
+          value: 'true'
+        - name: subdirectory
+          value: application-gitOps
+        - name: deleteExisting
+          value: 'true'
+        - name: KUSTOMIZATION_PATH
+          value: app/base
+        - name: verbose
+          value: 'true'
+        - name: gitInitImage
+          value: >-
+            registry.redhat.io/openshift-pipelines/pipelines-git-init-rhel8@sha256:afc5d3f9efe26c7042635d43b8ffd09d67936e3d0b6b901dc08a33e20313d361
+        - name: CURRENT_IMAGE
+          value: >-
+            example-registry-quay-quay-registry.apps.cluster-n2gmg.n2gmg.sandbox1085.opentlc.com/admin/$(params.APP_NAME)
+        - name: NEW_IMAGE
+          value: >-
+            example-registry-quay-quay-registry.apps.cluster-n2gmg.n2gmg.sandbox1085.opentlc.com/admin/$(params.APP_NAME)
+        - name: CONTEXT
+          value: $(params.APP_NAME)
+      taskRef:
+        kind: Task
+        name: git-update-deployment
+      workspaces:
+        - name: output
+          workspace: local-maven-repo
+  workspaces:
+    - name: local-maven-repo

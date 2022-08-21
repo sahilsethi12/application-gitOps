@@ -2,7 +2,7 @@ apiVersion: tekton.dev/v1beta1
 kind: Task
 metadata:
   creationTimestamp: '2022-08-18T18:29:41Z'
-  generation: 27
+  generation: 31
   managedFields:
     - apiVersion: tekton.dev/v1beta1
       fieldsType: FieldsV1
@@ -18,7 +18,7 @@ metadata:
       time: '2022-08-19T17:09:48Z'
   name: scan-image
   namespace: pipelines
-  resourceVersion: '3400947'
+  resourceVersion: '3402842'
   selfLink: /apis/tekton.dev/v1beta1/namespaces/pipelines/tasks/scan-image
   uid: 92dfba3c-c3b0-41ff-8054-402d7e6fc972
 spec:
@@ -59,11 +59,7 @@ spec:
          echo ""
          echo -e "==> $CRITICAL Critical Vulnerabilities found in this Layer"
          echo ""
-        fi  
-        done
-
-
-        cat report.txt
+        fi 
       volumeMounts:
         - mountPath: /etc/secret-volume
           name: quay-auth-secret
