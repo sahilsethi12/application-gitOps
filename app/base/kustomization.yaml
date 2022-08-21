@@ -15,5 +15,5 @@ patchesJson6902:
     name: camel-rest-sample
     version: v1
 images:
-- name: example-registry-quay-quay-registry.apps.cluster-n2gmg.n2gmg.sandbox1085.opentlc.com/admin/camel-rest-sample
+- name: sample
   newTag: 0234c71
